@@ -9,7 +9,7 @@ def get_prompt(instruction: str, history: List[str] = None) -> str:
     system = "You are an Al assistant that gives helpful answers.  You answer the questions in a short and concise way."
     prompt = f"### System:\n{system}\n\n### User:\n"
     if len(history) > 0:
-        prompt += f"This is the conversation history: {''. join(history)}. Now answer the question: "
+        prompt += f"This is the conversation history: {''.join(history)}. Now answer the question: "
     prompt += f"{instruction}\n\n### Response:\n"
     print(prompt)
     return prompt
@@ -17,7 +17,13 @@ def get_prompt(instruction: str, history: List[str] = None) -> str:
 
 @cl.on_message
 async def on_message(message: cl.Message):
-    message_history = cl.user_session. get("message_history")
+    if message.content.lower() == "forget everything":
+        print("Ok, everything will be removed from history.")
+        cl.user_session.set("message_history", [])
+        await cl.Message("Uh oh, I've just forgotten our conversation history").send()
+        return
+
+    message_history = cl.user_session.get("message_history")
     msg = cl.Message(content="")
     await msg.send()
 
